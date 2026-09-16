@@ -1,0 +1,31 @@
+{
+  "name": "til-marcon",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "postinstall": "prisma skills sync || exit 0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "framer-motion": "^13.4.0",
+    "lucide-react": "^1.46.0",
+    "next": "16.3.5",
+    "next-auth": "^4.24.15",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@prisma/client": "^5.22.0",
+    "@tailwindcss/postcss": "^4",
+    "autoprefixer": "^10.6.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.5",
+    "postcss": "^8.5.28",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.17"
+  }
+}
