@@ -343,7 +343,16 @@ export default function AlmoxarifadoPage() {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchPedidos(); }, []);
+  useEffect(() => { 
+    fetchPedidos();
+    // Atualiza automaticamente a cada 15 segundos
+    const interval = setInterval(() => {
+      if (!updating && !pinModal && !estornoModal) {
+        fetchPedidos();
+      }
+    }, 15000);
+    return () => clearInterval(interval);
+  }, [updating, pinModal, estornoModal]);
 
   const updatePedidoStatus = async (pedidoId, newStatus) => {
     setUpdating(true);

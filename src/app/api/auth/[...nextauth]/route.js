@@ -12,33 +12,49 @@ export const authOptions = {
         senha: { label: "Senha", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.senha) {
-          throw new Error("Email e senha são obrigatórios");
-        }
+        try {
+          console.log("=== [AUTH] Tentativa de login ===");
+          console.log("[AUTH] Email recebido:", credentials?.email);
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email
+          if (!credentials?.email || !credentials?.senha) {
+            console.log("[AUTH] Erro: campos email ou senha vazios");
+            throw new Error("Email e senha são obrigatórios");
           }
-        });
 
-        if (!user) {
-          throw new Error("Usuário não encontrado");
+          const user = await prisma.user.findUnique({
+            where: { email: credentials.email }
+          });
+
+          if (!user) {
+            console.log("[AUTH] Erro: usuário não encontrado no banco para email:", credentials.email);
+            throw new Error("Usuário não encontrado");
+          }
+
+          console.log("[AUTH] Usuário encontrado:", { id: user.id, nome: user.nome, email: user.email, role: user.role });
+          console.log("[AUTH] Senha no banco (primeiros 10 chars):", user.senha.substring(0, 10));
+          console.log("[AUTH] Senha é hash bcrypt?", user.senha.startsWith("$2a$") || user.senha.startsWith("$2b$"));
+
+          const isPasswordValid = await bcrypt.compare(credentials.senha, user.senha);
+          console.log("[AUTH] Resultado bcrypt.compare:", isPasswordValid);
+
+          if (!isPasswordValid) {
+            console.log("[AUTH] Erro: senha incorreta para usuário:", user.email);
+            throw new Error("Senha incorreta");
+          }
+
+          console.log("[AUTH] Login com sucesso! Role:", user.role, "| hasPin:", !!user.pin);
+
+          return {
+            id: user.id.toString(),
+            name: user.nome,
+            email: user.email,
+            role: user.role,
+            hasPin: !!user.pin
+          };
+        } catch (error) {
+          console.log("[AUTH] Erro auth:", error.message);
+          throw error;
         }
-
-        const isPasswordValid = await bcrypt.compare(credentials.senha, user.senha);
-
-        if (!isPasswordValid) {
-          throw new Error("Senha incorreta");
-        }
-
-        return {
-          id: user.id.toString(),
-          name: user.nome,
-          email: user.email,
-          role: user.role,
-          hasPin: !!user.pin // Se tiver pin cadastrado retorna true
-        };
       }
     })
   ],

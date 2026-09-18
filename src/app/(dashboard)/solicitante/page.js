@@ -208,8 +208,8 @@ export default function SolicitantePage() {
           </div>
 
           {/* Right: Cart */}
-          <div className="lg:w-80 flex flex-col">
-            <div className="site-card p-5 flex-1 flex flex-col">
+          <div className="lg:w-80">
+            <div className="site-card p-5">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-display font-black text-slate-700 uppercase tracking-wide">Carrinho</h3>
                 <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full" style={{ background: "var(--surface-3)", color: "var(--primary)" }}>
@@ -218,12 +218,12 @@ export default function SolicitantePage() {
               </div>
 
               {cart.length === 0 ? (
-                <div className="flex-1 flex items-center justify-center text-sm text-slate-400 font-medium">
+                <div className="flex items-center justify-center py-8 text-sm text-slate-400 font-medium">
                   <Package className="w-5 h-5 mr-2 opacity-40" />
                   Carrinho vazio
                 </div>
               ) : (
-                <div className="flex-1 overflow-y-auto space-y-2 custom-scrollbar mb-4">
+                <div className="space-y-2 mb-4">
                   <AnimatePresence>
                     {cart.map(c => (
                       <motion.div
