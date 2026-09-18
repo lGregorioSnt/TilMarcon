@@ -8,44 +8,65 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   nome      String
-  email     String   @unique
+  email     String    @unique
   senha     String
-  role      String   @default("USER")
+  pin       String?
+  role      String    @default("OPERADOR")
+  setor     String?
   pedidos   Pedido[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Item {
-  id          Int      @id @default(autoincrement())
-  codigo      String   @unique
+  id          Int          @id @default(autoincrement())
+  codigo      String       @unique
   nome        String
-  quantidade  Int      @default(0)
+  unidade     String       @default("UN")
+  quantidade  Int          @default(0)
   localizacao String?
   pedidoItens PedidoItem[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  estornos    Estorno[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 }
 
 model Pedido {
-  id         Int          @id @default(autoincrement())
-  userId     Int
-  status     String       @default("PENDENTE") // PENDENTE, SEPARACAO, CONCLUIDO
-  user       User         @relation(fields: [userId], references: [id])
-  itens      PedidoItem[]
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
+  id            Int          @id @default(autoincrement())
+  userId        Int
+  setor         String?
+  status        String       @default("AGUARDANDO_SEPARACAO")
+  pinValidadoEm DateTime?
+  entregueEm    DateTime?
+  observacao    String?      @db.Text
+  user          User         @relation(fields: [userId], references: [id])
+  itens         PedidoItem[]
+  estornos      Estorno[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model PedidoItem {
   id                Int      @id @default(autoincrement())
   pedidoId          Int
   itemId            Int
-  quantidade        Int      // Pedido original
-  quantidadeEnviada Int?     // Quanto realmente foi enviado
+  quantidade        Int
+  quantidadeEnviada Int?
   separado          Boolean  @default(false)
   pedido            Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
   item              Item     @relation(fields: [itemId], references: [id])
+}
+
+model Estorno {
+  id                  Int      @id @default(autoincrement())
+  pedidoId            Int
+  itemId              Int
+  quantidadeEstornada Int
+  motivo              String
+  realizadoPorUserId  Int
+  createdAt           DateTime @default(now())
+  pedido              Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  item                Item     @relation(fields: [itemId], references: [id])
 }

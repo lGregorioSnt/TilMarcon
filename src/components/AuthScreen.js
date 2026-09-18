@@ -188,11 +188,22 @@ export default function AuthScreen() {
       setError("Credenciais inválidas. Verifique e tente novamente.");
       setLoading(false);
     } else {
+      // Buscar sessão para obter a role do usuário
+      const sessionRes = await fetch("/api/auth/session");
+      const sessionData = await sessionRes.json();
+      const role = sessionData?.user?.role;
+
       // Animação de saída antes do redirect
       setIsExiting(true);
       setTimeout(() => {
-        router.push("/pedidos");
-      }, 600); // tempo para tocar a animação
+        if (role === "ADMIN") {
+          router.push("/admin");
+        } else if (role === "ALMOXARIFE") {
+          router.push("/almoxarifado");
+        } else {
+          router.push("/solicitante");
+        }
+      }, 600);
     }
   };
 
