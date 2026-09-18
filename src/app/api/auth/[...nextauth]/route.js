@@ -33,14 +33,36 @@ export const authOptions = {
         }
 
         return {
-          id: user.id,
+          id: user.id.toString(),
           name: user.nome,
           email: user.email,
-          role: user.role
+          role: user.role,
+          hasPin: !!user.pin // Se tiver pin cadastrado retorna true
         };
       }
     })
   ],
+  callbacks: {
+    async jwt({ token, user, trigger, session }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.hasPin = user.hasPin;
+      }
+      if (trigger === "update" && session?.hasPin !== undefined) {
+        token.hasPin = session.hasPin;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+        session.user.hasPin = token.hasPin;
+      }
+      return session;
+    }
+  },
   session: {
     strategy: "jwt",
   },
